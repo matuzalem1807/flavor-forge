@@ -43,7 +43,7 @@ export const Route = createFileRoute("/checkout")({
 
 const inputClass = "h-11 rounded-xl border-white/15 bg-white/10 text-cream placeholder:text-cream/35 focus-visible:ring-brand";
 
-function Field({ label, name, error, children }: { label: string; name: string; error?: string; children: ReactNode }) {
+function Field({ label, name, error, children }: { label: string; name: string; error: string | undefined; children: ReactNode }) {
   return (
     <div>
       <Label htmlFor={name} className="text-xs text-cream/70">{label}</Label>
@@ -145,8 +145,8 @@ function CheckoutPage() {
           <section>
             <h2 className="font-display text-base font-bold">Seus dados</h2>
             <div className="mt-3 grid gap-3">
-              <Field label="Nome completo" name="customerName" error={errors.customerName}><Input id="customerName" name="customerName" maxLength={100} autoComplete="name" placeholder="Como podemos chamar você?" className={inputClass} /></Field>
-              <Field label="Telefone" name="phone" error={errors.phone}><Input id="phone" name="phone" type="tel" maxLength={16} inputMode="tel" autoComplete="tel" placeholder="(11) 99999-9999" className={inputClass} /></Field>
+              <Field label="Nome completo" name="customerName" error={errors["customerName"]}><Input id="customerName" name="customerName" maxLength={100} autoComplete="name" placeholder="Como podemos chamar você?" className={inputClass} /></Field>
+              <Field label="Telefone" name="phone" error={errors["phone"]}><Input id="phone" name="phone" type="tel" maxLength={16} inputMode="tel" autoComplete="tel" placeholder="(11) 99999-9999" className={inputClass} /></Field>
             </div>
           </section>
 
@@ -162,14 +162,14 @@ function CheckoutPage() {
             <section>
               <div className="flex items-end justify-between gap-3"><h2 className="font-display text-base font-bold">Endereço de entrega</h2><span className="text-[10px] text-cream/40">* obrigatórios</span></div>
               <div className="mt-3 grid grid-cols-2 gap-3">
-                <Field label="CEP *" name="postalCode" error={errors.postalCode}><Input id="postalCode" name="postalCode" inputMode="numeric" maxLength={9} autoComplete="postal-code" placeholder="00000-000" className={inputClass} /></Field>
-                <Field label="Número *" name="number" error={errors.number}><Input id="number" name="number" maxLength={20} autoComplete="address-line2" placeholder="128" className={inputClass} /></Field>
-                <div className="col-span-2"><Field label="Rua *" name="street" error={errors.street}><Input id="street" name="street" maxLength={120} autoComplete="address-line1" placeholder="Nome da rua" className={inputClass} /></Field></div>
-                <Field label="Bairro *" name="neighborhood" error={errors.neighborhood}><Input id="neighborhood" name="neighborhood" maxLength={80} placeholder="Bairro" className={inputClass} /></Field>
-                <Field label="Complemento" name="complement" error={errors.complement}><Input id="complement" name="complement" maxLength={80} placeholder="Apto, bloco..." className={inputClass} /></Field>
-                <Field label="Cidade *" name="city" error={errors.city}><Input id="city" name="city" maxLength={80} autoComplete="address-level2" placeholder="Cidade" className={inputClass} /></Field>
-                <Field label="Estado *" name="state" error={errors.state}><Input id="state" name="state" maxLength={2} autoComplete="address-level1" placeholder="SP" className={`${inputClass} uppercase`} /></Field>
-                <div className="col-span-2"><Field label="Ponto de referência" name="reference" error={errors.reference}><Input id="reference" name="reference" maxLength={120} placeholder="Próximo à praça..." className={inputClass} /></Field></div>
+                <Field label="CEP *" name="postalCode" error={errors["postalCode"]}><Input id="postalCode" name="postalCode" inputMode="numeric" maxLength={9} autoComplete="postal-code" placeholder="00000-000" className={inputClass} /></Field>
+                <Field label="Número *" name="number" error={errors["number"]}><Input id="number" name="number" maxLength={20} autoComplete="address-line2" placeholder="128" className={inputClass} /></Field>
+                <div className="col-span-2"><Field label="Rua *" name="street" error={errors["street"]}><Input id="street" name="street" maxLength={120} autoComplete="address-line1" placeholder="Nome da rua" className={inputClass} /></Field></div>
+                <Field label="Bairro *" name="neighborhood" error={errors["neighborhood"]}><Input id="neighborhood" name="neighborhood" maxLength={80} placeholder="Bairro" className={inputClass} /></Field>
+                <Field label="Complemento" name="complement" error={errors["complement"]}><Input id="complement" name="complement" maxLength={80} placeholder="Apto, bloco..." className={inputClass} /></Field>
+                <Field label="Cidade *" name="city" error={errors["city"]}><Input id="city" name="city" maxLength={80} autoComplete="address-level2" placeholder="Cidade" className={inputClass} /></Field>
+                <Field label="Estado *" name="state" error={errors["state"]}><Input id="state" name="state" maxLength={2} autoComplete="address-level1" placeholder="SP" className={`${inputClass} uppercase`} /></Field>
+                <div className="col-span-2"><Field label="Ponto de referência" name="reference" error={errors["reference"]}><Input id="reference" name="reference" maxLength={120} placeholder="Próximo à praça..." className={inputClass} /></Field></div>
               </div>
 
               <GlassCard className="mt-4 p-3">
@@ -198,7 +198,7 @@ function CheckoutPage() {
                 </Button>
               ))}
             </div>
-            {paymentTiming === "on_delivery" && paymentMethod === "cash" ? <div className="mt-3"><Field label="Troco para quanto?" name="changeFor" error={errors.changeFor}><Input id="changeFor" name="changeFor" inputMode="decimal" placeholder="Ex.: 100,00 (opcional)" className={inputClass} /></Field></div> : null}
+            {paymentTiming === "on_delivery" && paymentMethod === "cash" ? <div className="mt-3"><Field label="Troco para quanto?" name="changeFor" error={errors["changeFor"]}><Input id="changeFor" name="changeFor" inputMode="decimal" placeholder="Ex.: 100,00 (opcional)" className={inputClass} /></Field></div> : null}
           </section>
 
           <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-xs leading-relaxed text-cream/65">
