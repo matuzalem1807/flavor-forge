@@ -14,7 +14,152 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          available: boolean
+          category_id: string
+          created_at: string
+          description: string
+          featured: boolean
+          id: string
+          image_key: string | null
+          name: string
+          price_cents: number
+          promo_price_cents: number | null
+          slug: string
+          sort_order: number
+          tags: string[]
+          updated_at: string
+        }
+        Insert: {
+          available?: boolean
+          category_id: string
+          created_at?: string
+          description?: string
+          featured?: boolean
+          id?: string
+          image_key?: string | null
+          name: string
+          price_cents: number
+          promo_price_cents?: number | null
+          slug: string
+          sort_order?: number
+          tags?: string[]
+          updated_at?: string
+        }
+        Update: {
+          available?: boolean
+          category_id?: string
+          created_at?: string
+          description?: string
+          featured?: boolean
+          id?: string
+          image_key?: string | null
+          name?: string
+          price_cents?: number
+          promo_price_cents?: number | null
+          slug?: string
+          sort_order?: number
+          tags?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurant: {
+        Row: {
+          address: string
+          average_prep_minutes: number
+          cover_image_key: string | null
+          created_at: string
+          description: string
+          id: string
+          instagram: string
+          logo_initial: string
+          name: string
+          primary_color: string
+          rating: number
+          rating_count: string
+          secondary_color: string
+          status: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          address?: string
+          average_prep_minutes?: number
+          cover_image_key?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          instagram?: string
+          logo_initial?: string
+          name: string
+          primary_color?: string
+          rating?: number
+          rating_count?: string
+          secondary_color?: string
+          status?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Update: {
+          address?: string
+          average_prep_minutes?: number
+          cover_image_key?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          instagram?: string
+          logo_initial?: string
+          name?: string
+          primary_color?: string
+          rating?: number
+          rating_count?: string
+          secondary_color?: string
+          status?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
