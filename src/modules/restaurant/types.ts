@@ -1,8 +1,9 @@
-/** Tipos do domínio do restaurante (Etapa 1 — página pública). */
+/** Tipos do domínio do restaurante (cardápio público). */
 
 export type StoreStatus = "aberto" | "fechado" | "pausado";
 
 export interface Restaurant {
+  id: string;
   name: string;
   description: string;
   logoInitial: string;
@@ -21,6 +22,7 @@ export interface Restaurant {
 
 export interface Category {
   id: string;
+  slug: string;
   name: string;
   order: number;
   active: boolean;
@@ -29,6 +31,7 @@ export interface Category {
 export interface Product {
   id: string;
   categoryId: string;
+  slug: string;
   name: string;
   description: string;
   image: string;
@@ -40,4 +43,5 @@ export interface Product {
   featured: boolean;
   /** Etiquetas curtas exibidas no card (ex.: "+ Adicionais"). */
   tags?: string[];
+  order: number;
 }
