@@ -1,3 +1,7 @@
+import { Link } from "@tanstack/react-router";
+import { ShoppingCart } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { formatBRL } from "../pricing";
 
 export function CartBar({
@@ -12,8 +16,8 @@ export function CartBar({
   return (
     <div className="fixed bottom-4 left-4 right-4 z-30">
       <div className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/15 p-2.5 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.7)] backdrop-blur-2xl">
-        <div className="relative grid shrink-0 place-items-center">
-          <span className="text-2xl">🛒</span>
+        <div className="relative grid size-9 shrink-0 place-items-center text-cream">
+          <ShoppingCart aria-hidden="true" className="size-6" />
           <span className="absolute -top-1 -right-2 grid size-5 place-items-center rounded-full bg-brand text-[11px] font-bold text-white">
             {itemCount}
           </span>
@@ -26,12 +30,12 @@ export function CartBar({
             {formatBRL(totalCents)}
           </p>
         </div>
-        <button
-          type="button"
-          className="shrink-0 rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_-6px_var(--brand-soft)]"
+        <Button
+          asChild
+          className="h-11 shrink-0 rounded-xl bg-brand px-5 text-sm font-semibold text-cream shadow-[0_8px_24px_-6px_var(--brand-soft)] hover:bg-brand/90"
         >
-          Ver carrinho
-        </button>
+          <Link to="/carrinho">Ver carrinho</Link>
+        </Button>
       </div>
     </div>
   );
