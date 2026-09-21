@@ -1,11 +1,8 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-import {
-  demoCategories,
-  demoProducts,
-  demoRestaurant,
-} from "@/modules/restaurant/demo-data";
+import { menuQueryOptions } from "@/modules/restaurant/queries";
 import { effectivePriceCents } from "@/modules/restaurant/pricing";
 import type { Product } from "@/modules/restaurant/types";
 import { CartBar } from "@/modules/restaurant/components/CartBar";
@@ -16,6 +13,7 @@ import { RestaurantHero } from "@/modules/restaurant/components/RestaurantHero";
 import { RestaurantTopBar } from "@/modules/restaurant/components/RestaurantTopBar";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(menuQueryOptions),
   head: () => ({
     meta: [
       { title: "João Burguer — Hambúrgueres artesanais com entrega" },
@@ -30,21 +28,24 @@ export const Route = createFileRoute("/")({
         content:
           "Smash burgers feitos na hora, entrega em cerca de 12 minutos. Monte seu pedido pelo cardápio.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: RestaurantPage,
 });
 
 function RestaurantPage() {
-  const categories = useMemo(
-    () => demoCategories.filter((c) => c.active).sort((a, b) => a.order - b.order),
-    [],
-  );
-  const [activeCategoryId, setActiveCategoryId] = useState(categories[0]!.id);
+  const { data } = useSuspenseQuery(menuQueryOptions);
+  const { restaurant, categories, products } = data;
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [cart, setCart] = useState<Product[]>([]);
 
-  const featured = demoProducts.filter((p) => p.featured && p.available);
-  const listed = demoProducts.filter((p) => p.categoryId === activeCategoryId);
+  const activeCategoryId = selectedCategoryId ?? categories[0]?.id ?? null;
+
+  const featured = products.filter((p) => p.featured && p.available);
+  const listed = products.filter((p) => p.categoryId === activeCategoryId);
 
   const totalCents = cart.reduce((sum, p) => sum + effectivePriceCents(p), 0);
 
@@ -60,29 +61,33 @@ function RestaurantPage() {
       <div className="pointer-events-none absolute bottom-0 left-1/3 size-60 rounded-full bg-fuchsia-500/20 blur-3xl" />
 
       <div className="relative mx-auto w-full max-w-lg">
-        <RestaurantTopBar restaurant={demoRestaurant} />
-        <RestaurantHero restaurant={demoRestaurant} />
+        <RestaurantTopBar restaurant={restaurant} />
+        <RestaurantHero restaurant={restaurant} />
 
-        <CategoryChips
-          categories={categories}
-          activeId={activeCategoryId}
-          onSelect={setActiveCategoryId}
-        />
+        {activeCategoryId ? (
+          <CategoryChips
+            categories={categories}
+            activeId={activeCategoryId}
+            onSelect={setSelectedCategoryId}
+          />
+        ) : null}
 
-        <section className="relative z-20 mt-5 px-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold tracking-tight">Em destaque</h2>
-          </div>
-          <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto pb-1">
-            {featured.map((product) => (
-              <FeaturedProductCard
-                key={product.id}
-                product={product}
-                onAdd={addToCart}
-              />
-            ))}
-          </div>
-        </section>
+        {featured.length > 0 ? (
+          <section className="relative z-20 mt-5 px-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-lg font-bold tracking-tight">Em destaque</h2>
+            </div>
+            <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto pb-1">
+              {featured.map((product) => (
+                <FeaturedProductCard
+                  key={product.id}
+                  product={product}
+                  onAdd={addToCart}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="relative z-20 mt-6 px-4 pb-32">
           <h2 className="font-display text-lg font-bold tracking-tight">Cardápio</h2>
