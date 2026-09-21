@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Check, CreditCard, MapPin, ShoppingBag, Store } from "lucide-react";
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/checkout")({
 
 const inputClass = "h-11 rounded-xl border-white/15 bg-white/10 text-cream placeholder:text-cream/35 focus-visible:ring-brand";
 
-function Field({ label, name, error, children }: { label: string; name: string; error?: string; children: React.ReactNode }) {
+function Field({ label, name, error, children }: { label: string; name: string; error?: string; children: ReactNode }) {
   return (
     <div>
       <Label htmlFor={name} className="text-xs text-cream/70">{label}</Label>
