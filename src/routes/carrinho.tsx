@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   ArrowLeft,
   ChevronRight,
@@ -8,17 +9,6 @@ import {
   Trash2,
 } from "lucide-react";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useCart, type CartLineWithSubtotal } from "@/modules/cart/cart-context";
 import { GlassCard } from "@/modules/restaurant/components/GlassCard";
@@ -165,6 +155,7 @@ function EmptyCart() {
 
 function CartPage() {
   const { lines, itemCount, subtotalCents, clear } = useCart();
+  const [confirmClear, setConfirmClear] = useState(false);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-page font-body text-cream">
@@ -192,36 +183,14 @@ function CartPage() {
                 {itemCount === 1 ? "1 item" : `${itemCount} itens`}
               </p>
             </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="h-9 rounded-lg px-2 text-xs font-semibold text-cream/60 hover:bg-white/10 hover:text-cream"
-                >
-                  Limpar
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="w-[calc(100%-2rem)] rounded-2xl border-white/15 bg-page text-cream">
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="font-display">Limpar o carrinho?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-cream/60">
-                    Todos os produtos e escolhas serão removidos.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="gap-2">
-                  <AlertDialogCancel className="border-white/15 bg-white/10 text-cream hover:bg-white/15 hover:text-cream">
-                    Cancelar
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={clear}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Limpar carrinho
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setConfirmClear(true)}
+              className="h-9 rounded-lg px-2 text-xs font-semibold text-cream/60 hover:bg-white/10 hover:text-cream"
+            >
+              Limpar
+            </Button>
           </header>
 
           <main className="space-y-3 px-4 pt-4">
@@ -268,6 +237,45 @@ function CartPage() {
               </Button>
             </div>
           </div>
+
+          {confirmClear ? (
+            <div
+              className="fixed inset-0 z-50 grid place-items-center bg-page/80 p-4 backdrop-blur-sm"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="clear-cart-title"
+              aria-describedby="clear-cart-description"
+            >
+              <div className="w-full max-w-sm rounded-2xl border border-white/15 bg-page p-5 shadow-2xl">
+                <h2 id="clear-cart-title" className="font-display text-lg font-bold">
+                  Limpar o carrinho?
+                </h2>
+                <p id="clear-cart-description" className="mt-2 text-sm text-cream/60">
+                  Todos os produtos e escolhas serão removidos.
+                </p>
+                <div className="mt-5 flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setConfirmClear(false)}
+                    className="border-white/15 bg-white/10 text-cream hover:bg-white/15 hover:text-cream"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => {
+                      clear();
+                      setConfirmClear(false);
+                    }}
+                  >
+                    Limpar carrinho
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       )}
     </div>
