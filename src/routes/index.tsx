@@ -1,9 +1,9 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { useCart } from "@/modules/cart/cart-context";
 import { menuQueryOptions } from "@/modules/restaurant/queries";
-import { effectivePriceCents } from "@/modules/restaurant/pricing";
 import type { Product } from "@/modules/restaurant/types";
 import { CartBar } from "@/modules/restaurant/components/CartBar";
 import { CategoryChips } from "@/modules/restaurant/components/CategoryChips";
@@ -38,20 +38,19 @@ export const Route = createFileRoute("/")({
 function RestaurantPage() {
   const { data } = useSuspenseQuery(menuQueryOptions);
   const { restaurant, categories, products } = data;
+  const navigate = useNavigate();
+  const { itemCount, subtotalCents } = useCart();
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-  const [cart, setCart] = useState<Product[]>([]);
 
   const activeCategoryId = selectedCategoryId ?? categories[0]?.id ?? null;
 
   const featured = products.filter((p) => p.featured && p.available);
   const listed = products.filter((p) => p.categoryId === activeCategoryId);
 
-  const totalCents = cart.reduce((sum, p) => sum + effectivePriceCents(p), 0);
-
-  const addToCart = (product: Product) => {
+  const openProduct = (product: Product) => {
     if (!product.available) return;
-    setCart((current) => [...current, product]);
+    void navigate({ to: "/produto/$slug", params: { slug: product.slug } });
   };
 
   return (
@@ -82,7 +81,7 @@ function RestaurantPage() {
                 <FeaturedProductCard
                   key={product.id}
                   product={product}
-                  onAdd={addToCart}
+                  onAdd={openProduct}
                 />
               ))}
             </div>
@@ -98,14 +97,14 @@ function RestaurantPage() {
               </p>
             ) : (
               listed.map((product) => (
-                <ProductRow key={product.id} product={product} onAdd={addToCart} />
+                <ProductRow key={product.id} product={product} onAdd={openProduct} />
               ))
             )}
           </div>
         </section>
       </div>
 
-      <CartBar itemCount={cart.length} totalCents={totalCents} />
+      <CartBar itemCount={itemCount} totalCents={subtotalCents} />
     </div>
   );
 }
