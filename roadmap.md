@@ -3,7 +3,7 @@
 - [x] Etapa 1 — Página pública
 - [x] Etapa 2 — Categorias e produtos
 - [x] Etapa 3 — Produto, opções e adicionais
-- [ ] Etapa 4 — Carrinho
+- [x] Etapa 4 — Carrinho
 - [ ] Etapa 5 — Checkout
 - [ ] Etapa 6 — Criação do pedido
 - [ ] Etapa 7 — Acompanhamento
