@@ -175,8 +175,8 @@ function CheckoutPage() {
               <GlassCard className="mt-4 p-3">
                 <p className="text-xs font-semibold">Simulação de distância</p>
                 <p className="mt-1 text-[11px] leading-relaxed text-cream/50">Escolha uma distância para testar a taxa enquanto o mapa não está conectado.</p>
-                <div className="mt-3 grid grid-cols-5 gap-1.5">
-                  {[1, 3, 5, 7, 9].map((km) => <Button key={km} type="button" variant="outline" onClick={() => { setDistanceKm(km); setReady(false); }} className={`h-9 rounded-lg border-white/15 px-1 text-xs ${distanceKm === km ? "bg-accent-warm text-ink hover:bg-accent-warm/90" : "bg-white/5 text-cream hover:bg-white/10"}`}>{km} km</Button>)}
+                <div className="mt-3 grid grid-cols-4 gap-1.5">
+                  {[1, 3, 5, 7, 9, 11, 13, 16].map((km) => <Button key={km} type="button" variant="outline" onClick={() => { setDistanceKm(km); setReady(false); }} className={`h-9 rounded-lg border-white/15 px-1 text-xs ${distanceKm === km ? "bg-accent-warm text-ink hover:bg-accent-warm/90" : "bg-white/5 text-cream hover:bg-white/10"}`}>{km} km</Button>)}
                 </div>
                 {outsideArea ? <p className="mt-3 rounded-lg bg-destructive/15 px-3 py-2 text-xs text-destructive" role="alert">Endereço fora da área de entrega. Atendemos até {delivery.maxDistanceKm} km.</p> : <p className="mt-3 text-xs text-cream/65">Taxa para esta distância: <strong className="text-accent-warm">{formatBRL(deliveryFeeCents ?? 0)}</strong></p>}
               </GlassCard>
