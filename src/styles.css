@@ -19,6 +19,14 @@
  */
 
 @theme inline {
+  --font-display: var(--font-display-family);
+  --font-body: var(--font-body-family);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent-warm: var(--accent-warm);
+  --color-ink: var(--ink);
+  --color-cream: var(--cream);
+  --color-page: var(--page);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -62,6 +70,15 @@
 }
 
 :root {
+  /* Identidade visual do restaurante (editável no painel na Etapa 14) */
+  --brand: oklch(0.678 0.208 39.1);
+  --brand-soft: oklch(0.678 0.208 39.1 / 40%);
+  --accent-warm: oklch(0.845 0.139 79.5);
+  --ink: oklch(0.2 0.03 310);
+  --cream: oklch(0.973 0.019 61.5);
+  --page: oklch(0.217 0.041 311);
+  --font-display-family: "Space Grotesk", sans-serif;
+  --font-body-family: "Plus Jakarta Sans", sans-serif;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
@@ -140,5 +157,13 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
