@@ -44,6 +44,94 @@ export type Database = {
         }
         Relationships: []
       }
+      option_groups: {
+        Row: {
+          created_at: string
+          id: string
+          max_select: number
+          min_select: number
+          name: string
+          product_id: string
+          required: boolean
+          selection_type: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_select?: number
+          min_select?: number
+          name: string
+          product_id: string
+          required?: boolean
+          selection_type?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_select?: number
+          min_select?: number
+          name?: string
+          product_id?: string
+          required?: boolean
+          selection_type?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "option_groups_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      options: {
+        Row: {
+          available: boolean
+          created_at: string
+          group_id: string
+          id: string
+          name: string
+          price_delta_cents: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          available?: boolean
+          created_at?: string
+          group_id: string
+          id?: string
+          name: string
+          price_delta_cents?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          available?: boolean
+          created_at?: string
+          group_id?: string
+          id?: string
+          name?: string
+          price_delta_cents?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "options_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "option_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           available: boolean
