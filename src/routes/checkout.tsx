@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Check, CreditCard, MapPin, ShoppingBag, Store } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, CreditCard, LoaderCircle, MapPin, ShoppingBag, Store } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { checkoutSchema } from "@/modules/checkout/checkout-schema";
 import { deliveryQueryOptions, findDeliveryFee } from "@/modules/checkout/delivery-queries";
 import { useCart } from "@/modules/cart/cart-context";
+import { createOrder } from "@/modules/orders/order.functions";
 import { GlassCard } from "@/modules/restaurant/components/GlassCard";
 import { formatBRL } from "@/modules/restaurant/pricing";
 
@@ -54,7 +55,8 @@ function Field({ label, name, error, children }: { label: string; name: string; 
 }
 
 function CheckoutPage() {
-  const { lines, itemCount, subtotalCents } = useCart();
+  const { lines, itemCount, subtotalCents, clear } = useCart();
+  const navigate = useNavigate();
   const { data: delivery } = useSuspenseQuery(deliveryQueryOptions);
   const [fulfillment, setFulfillment] = useState<Fulfillment>("delivery");
   const [distanceKm, setDistanceKm] = useState(1);
@@ -62,7 +64,8 @@ function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("pix");
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
-  const [ready, setReady] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const deliveryFeeCents = useMemo(
     () => fulfillment === "pickup" ? 0 : findDeliveryFee(delivery.ranges, distanceKm),
@@ -86,12 +89,12 @@ function CheckoutPage() {
   const changePaymentTiming = (timing: PaymentTiming) => {
     setPaymentTiming(timing);
     setPaymentMethod(timing === "online" ? "pix" : "cash");
-    setReady(false);
   };
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setReady(false);
+    if (submitting) return;
+    setSubmitError("");
     const form = new FormData(event.currentTarget);
     const rawChange = String(form.get("changeFor") ?? "").replace(/[^\d,]/g, "").replace(",", ".");
     const result = checkoutSchema.safeParse({
@@ -128,7 +131,33 @@ function CheckoutPage() {
       return;
     }
     setErrors({});
-    setReady(true);
+    setSubmitting(true);
+    try {
+      const order = await createOrder({
+        data: {
+          ...result.data,
+          items: lines.map((line) => ({
+            productId: line.productId,
+            quantity: line.quantity,
+            optionIds: line.options.map((option) => option.optionId),
+            note: line.note,
+          })),
+        },
+      });
+      clear();
+      await navigate({
+        to: "/pedido-confirmado",
+        search: {
+          numero: order.orderNumber,
+          codigo: order.trackingCode,
+          total: order.totalCents,
+          pagamento: result.data.paymentTiming,
+        },
+      });
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Não foi possível criar o pedido. Tente novamente.");
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -153,8 +182,8 @@ function CheckoutPage() {
           <section>
             <h2 className="font-display text-base font-bold">Como deseja receber?</h2>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              <Button type="button" variant="outline" onClick={() => { setFulfillment("delivery"); setReady(false); }} className={`h-12 rounded-xl border-white/15 ${fulfillment === "delivery" ? "bg-brand text-cream hover:bg-brand/90" : "bg-white/10 text-cream hover:bg-white/15"}`}><MapPin /> Entrega</Button>
-              <Button type="button" variant="outline" onClick={() => { setFulfillment("pickup"); setReady(false); }} className={`h-12 rounded-xl border-white/15 ${fulfillment === "pickup" ? "bg-brand text-cream hover:bg-brand/90" : "bg-white/10 text-cream hover:bg-white/15"}`}><Store /> Retirada</Button>
+               <Button type="button" variant="outline" onClick={() => setFulfillment("delivery")} className={`h-12 rounded-xl border-white/15 ${fulfillment === "delivery" ? "bg-brand text-cream hover:bg-brand/90" : "bg-white/10 text-cream hover:bg-white/15"}`}><MapPin /> Entrega</Button>
+               <Button type="button" variant="outline" onClick={() => setFulfillment("pickup")} className={`h-12 rounded-xl border-white/15 ${fulfillment === "pickup" ? "bg-brand text-cream hover:bg-brand/90" : "bg-white/10 text-cream hover:bg-white/15"}`}><Store /> Retirada</Button>
             </div>
           </section>
 
@@ -176,7 +205,7 @@ function CheckoutPage() {
                 <p className="text-xs font-semibold">Simulação de distância</p>
                 <p className="mt-1 text-[11px] leading-relaxed text-cream/50">Escolha uma distância para testar a taxa enquanto o mapa não está conectado.</p>
                 <div className="mt-3 grid grid-cols-4 gap-1.5">
-                  {[1, 3, 5, 7, 9, 11, 13, 16].map((km) => <Button key={km} type="button" variant="outline" onClick={() => { setDistanceKm(km); setReady(false); }} className={`h-9 rounded-lg border-white/15 px-1 text-xs ${distanceKm === km ? "bg-accent-warm text-ink hover:bg-accent-warm/90" : "bg-white/5 text-cream hover:bg-white/10"}`}>{km} km</Button>)}
+                   {[1, 3, 5, 7, 9, 11, 13, 16].map((km) => <Button key={km} type="button" variant="outline" onClick={() => setDistanceKm(km)} className={`h-9 rounded-lg border-white/15 px-1 text-xs ${distanceKm === km ? "bg-accent-warm text-ink hover:bg-accent-warm/90" : "bg-white/5 text-cream hover:bg-white/10"}`}>{km} km</Button>)}
                 </div>
                 {outsideArea ? <p className="mt-3 rounded-lg bg-destructive/15 px-3 py-2 text-xs text-destructive" role="alert">Endereço fora da área de entrega. Atendemos até {delivery.maxDistanceKm} km.</p> : <p className="mt-3 text-xs text-cream/65">Taxa para esta distância: <strong className="text-accent-warm">{formatBRL(deliveryFeeCents ?? 0)}</strong></p>}
               </GlassCard>
@@ -193,7 +222,7 @@ function CheckoutPage() {
             </div>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {(paymentTiming === "online" ? (["pix", "card"] as const) : (["cash", "card"] as const)).map((method) => (
-                <Button key={method} type="button" variant="outline" onClick={() => { setPaymentMethod(method); setReady(false); }} className={`h-11 rounded-xl border-white/15 ${paymentMethod === method ? "bg-accent-warm text-ink hover:bg-accent-warm/90" : "bg-white/5 text-cream hover:bg-white/10"}`}>
+                 <Button key={method} type="button" variant="outline" onClick={() => setPaymentMethod(method)} className={`h-11 rounded-xl border-white/15 ${paymentMethod === method ? "bg-accent-warm text-ink hover:bg-accent-warm/90" : "bg-white/5 text-cream hover:bg-white/10"}`}>
                   <CreditCard /> {method === "pix" ? "Pix" : method === "cash" ? "Dinheiro" : "Cartão"}
                 </Button>
               ))}
@@ -212,12 +241,12 @@ function CheckoutPage() {
             <div className="mt-3 flex justify-between font-display text-lg font-bold"><span>Total</span><span>{formatBRL(totalCents)}</span></div>
           </section>
 
-          {ready ? <div className="flex gap-2 rounded-xl border border-accent-warm/40 bg-accent-warm/10 p-3 text-sm text-cream" role="status"><Check className="size-5 shrink-0 text-accent-warm" /><span>Dados conferidos. A criação do pedido será ativada na próxima etapa.</span></div> : null}
+           {submitError ? <div className="rounded-xl bg-destructive/15 p-3 text-sm text-destructive" role="alert">{submitError}</div> : null}
         </form>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-page/85 p-4 backdrop-blur-2xl">
-        <div className="mx-auto max-w-lg"><Button type="submit" form="checkout-form" disabled={outsideArea} className="h-12 w-full justify-between rounded-xl bg-brand px-4 font-semibold text-cream hover:bg-brand/90"><span>Revisar pedido</span><span>{formatBRL(totalCents)}</span></Button></div>
+         <div className="mx-auto max-w-lg"><Button type="submit" form="checkout-form" disabled={outsideArea || submitting} className="h-12 w-full justify-between rounded-xl bg-brand px-4 font-semibold text-cream hover:bg-brand/90"><span className="flex items-center gap-2">{submitting ? <LoaderCircle className="animate-spin" /> : null}{submitting ? "Enviando pedido" : "Fazer pedido"}</span><span>{formatBRL(totalCents)}</span></Button></div>
       </div>
     </div>
   );
