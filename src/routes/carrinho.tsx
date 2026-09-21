@@ -228,12 +228,13 @@ function CartPage() {
                 <span className="font-display text-lg font-bold">{formatBRL(subtotalCents)}</span>
               </div>
               <Button
-                type="button"
-                disabled
+                asChild
                 className="h-12 w-full justify-between rounded-xl bg-brand px-4 font-semibold text-cream"
               >
-                <span>Continuar</span>
-                <ChevronRight aria-hidden="true" />
+                <Link to="/checkout">
+                  <span>Continuar</span>
+                  <ChevronRight aria-hidden="true" />
+                </Link>
               </Button>
             </div>
           </div>
