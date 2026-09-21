@@ -4,7 +4,7 @@
 - [x] Etapa 2 — Categorias e produtos
 - [x] Etapa 3 — Produto, opções e adicionais
 - [x] Etapa 4 — Carrinho
-- [ ] Etapa 5 — Checkout
+- [x] Etapa 5 — Checkout
 - [ ] Etapa 6 — Criação do pedido
 - [ ] Etapa 7 — Acompanhamento
 - [ ] Etapa 8 — Login e cadastro
