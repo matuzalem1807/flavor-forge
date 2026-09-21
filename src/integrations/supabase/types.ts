@@ -44,6 +44,77 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_ranges: {
+        Row: {
+          active: boolean
+          created_at: string
+          delivery_settings_id: string
+          fee_cents: number
+          id: string
+          max_distance_km: number
+          min_distance_km: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          delivery_settings_id: string
+          fee_cents: number
+          id?: string
+          max_distance_km: number
+          min_distance_km: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          delivery_settings_id?: string
+          fee_cents?: number
+          id?: string
+          max_distance_km?: number
+          min_distance_km?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_ranges_delivery_settings_id_fkey"
+            columns: ["delivery_settings_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_settings: {
+        Row: {
+          active: boolean
+          calculation_mode: string
+          created_at: string
+          id: string
+          max_distance_km: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          calculation_mode?: string
+          created_at?: string
+          id?: string
+          max_distance_km?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          calculation_mode?: string
+          created_at?: string
+          id?: string
+          max_distance_km?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       option_groups: {
         Row: {
           created_at: string
